@@ -14,7 +14,8 @@ const app = express();
 const server = http.createServer(app)
 const io = socketio(server);
 
-
+const router = require('./router');
+app.use('/', router);
 
 app.use(cors());
 app.use(express.json());
