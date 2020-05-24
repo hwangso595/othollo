@@ -24,11 +24,6 @@ mongoose.connect(uri, {useNewUrlParser: true,  useUnifiedTopology: true, useCrea
 const connection = mongoose.connection;
 connection.once('open', () => console.log('Connected to Mongoose'));
 
-const usersRouter = require('./routes/users');
-const mainRouter = require('./routes/main');
-app.use('/users', usersRouter);
-app.use('/', mainRouter);
-
 io.on('connection', socket => {
 
     socket.on('join', ({name, room}, callback)  => {
