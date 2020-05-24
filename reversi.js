@@ -24,7 +24,7 @@ class Othello {
     updateAvailable() {
         this.available = {};
         let opp = this.player === P1? P2 : P1;
-        let increment = [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[0,-1]]
+        let increment = [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]]
         for(let i = 0; i < BDLEN; i++) {
             for(let j = 0; j < BDWIDTH; j++) {
                 
