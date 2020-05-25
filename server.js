@@ -4,8 +4,8 @@ const mongoose = require('mongoose');
 const http = require('http');
 const socketio = require('socket.io');
 
-const {addUser, removeUser, getUser, getUsersInRoom, getPlayerList} = require('./users.js');
-const {updateGame, getGame, clearGame, addGame, removeGame} = require('./reversi.js')
+const {addUser, removeUser, getUser, getUsersInRoom, getPlayerList, checkExists} = require('./users.js');
+const {updateGame, getGame, clearGame, addGame, removeGame, getGameList} = require('./reversi.js')
 const {PORT, SPECT, P1, P2} = require('./variables.js');
 
 require('dotenv').config();
@@ -29,8 +29,8 @@ io.on('connection', socket => {
 
     socket.on('join', ({name, room}, callback)  => {
         room = room.trim().toLowerCase();
-        let playerType = getUsersInRoom(room).length === 1 ? P2 : getUsersInRoom(room).length < 1 ? P1 : SPECT;
-        const {error, user} = addUser({id:socket.id, name, room, playerType});
+        
+        const {error, user} = addUser({id:socket.id, name, room});
 
         if(error) return callback(error);
 
@@ -50,6 +50,35 @@ io.on('connection', socket => {
         socket.join(user.room);
         callback()
     });
+
+    socket.on('checkUser', ({name, room, join}, callback) => {
+        if (!name) {
+            return callback({type: 'name', message: 'Please enter your name'});
+        }
+        const game = getGame(room);
+        if (join) {
+            
+            if (checkExists({name, room})) {
+                return callback({type: 'name', message: 'Username is already taken in that room'});
+            } else if (!room) {
+                return callback({type: 'joinRoom', message: 'Please enter the room you want to join'});
+            } else if (!game) {
+                return callback({type: 'joinRoom', message: 'The room that you entered does not exist'});
+            } 
+        } else {
+            if (!room) {
+                return callback({type: 'createRoom', message: 'Please enter the room you want to create'});
+            } if (game) {
+                return callback({type: 'createRoom', message: 'The room that you entered already exist'});
+            } 
+        }
+        callback();
+    })
+
+    socket.on('getRoomList', (callback) => {
+        const roomList = getGameList();
+        return callback(roomList);
+    })
 
     socket.on('sendMove', ({coord, player}, callback) => {
         const user = getUser(socket.id);

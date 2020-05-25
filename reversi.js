@@ -11,8 +11,10 @@ class Othello {
 
         this.available = [];
         this.player = P1;
+        this.noPlay = [1,1];
         this.updateAvailable();
-        this.room = room
+        this.room = room;
+        
         this.winner = '';
     }
     updateBoard(coord, playerClient) {
@@ -25,6 +27,7 @@ class Othello {
         this.available = {};
         let opp = this.player === P1? P2 : P1;
         let increment = [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]]
+        let noAvail = 0;
         for(let i = 0; i < BDLEN; i++) {
             for(let j = 0; j < BDWIDTH; j++) {
                 
@@ -42,12 +45,15 @@ class Othello {
                             if(0 <= row && row < BDLEN && 0 <= col && col < BDWIDTH && this.board[row][col] === '') {
                                 if(!(row*BDWIDTH+col in this.available)) this.available[row*BDWIDTH+col] = [];
                                 this.available[row*BDWIDTH+col].push(...cellFlip);
+                                noAvail = 1;
                             }
                         }
                     }
                 }
             }
         }
+        this.noPlay.shift();
+        this.noPlay.push(noAvail);
     }
     updatePlayer(playerClient) {
         this.player = playerClient === P1 ? P2 : P1;
@@ -62,7 +68,7 @@ class Othello {
     }
     updateWinner() {
         let count1 = 0, count2 = 0;
-        if(this.boardFilled()) {
+        if((this.noPlay[0] === 0 && this.noPlay[1] === 0) || this.boardFilled()) {
             for(let i = 0; i < BDLEN; i++) {
                 for(let j = 0; j < BDWIDTH; j++) {
                     if(this.board[i][j] === P1){
@@ -143,4 +149,9 @@ function clearGame(room) {
     return returnGame(existingGame);
 }
 
-module.exports = {P1, P2, updateGame, getGame, clearGame, removeGame, addGame}
+function getGameList() {
+    const gameList = games.map((game) => {return game.room});
+    return gameList;
+}
+
+module.exports = {P1, P2, updateGame, getGame, clearGame, removeGame, addGame, getGameList}
