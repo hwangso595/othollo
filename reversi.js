@@ -9,7 +9,7 @@ class Othello {
         }
         [this.board[3][3], this.board[3][4], this.board[4][3], this.board[4][4]] = [P1, P2, P2, P1];
 
-        this.available = [];
+        this.available = {};
         this.player = P1;
         this.noPlay = [1,1];
         this.updateAvailable();
@@ -84,10 +84,17 @@ class Othello {
         }
     }
     clearGame() {
-        this.board = new Array(BDLEN).fill(Array(BDWIDTH).fill(''));
+        this.board = new Array(BDLEN);
+        for (var i = 0; i < this.board.length; i++) {
+            this.board[i] = new Array(BDWIDTH).fill('');
+        }
         [this.board[3][3], this.board[3][4], this.board[4][3], this.board[4][4]] = [P1, P2, P2, P1];
-        this.updateAvailable();
+
+        this.available = {};
         this.player = P1;
+        this.noPlay = [1,1];
+        this.updateAvailable();
+        
         this.winner = '';
     }
 }
